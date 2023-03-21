@@ -44,14 +44,11 @@ class GeoFeatureModelSerializer(ModelSerializer):
     @classmethod
     def many_init(cls, *args, **kwargs):
         child_serializer = cls(*args, **kwargs)
-        list_kwargs = {'child': child_serializer}
-        list_kwargs.update(
-            {
-                key: value
-                for key, value in kwargs.items()
-                if key in LIST_SERIALIZER_KWARGS
-            }
-        )
+        list_kwargs = {'child': child_serializer} | {
+            key: value
+            for key, value in kwargs.items()
+            if key in LIST_SERIALIZER_KWARGS
+        }
         meta = getattr(cls, 'Meta', None)
         list_serializer_class = getattr(
             meta, 'list_serializer_class', GeoFeatureModelListSerializer
@@ -84,13 +81,16 @@ class GeoFeatureModelSerializer(ModelSerializer):
 
         def add_to_fields(field_name):
             """Make sure the field is included in the fields"""
-            if hasattr(meta, 'fields') and meta.fields != '__all__':
-                if field_name not in meta.fields:
-                    if type(meta.fields) is tuple:
-                        additional_fields = (field_name,)
-                    else:
-                        additional_fields = [field_name]
-                    meta.fields += additional_fields
+            if (
+                hasattr(meta, 'fields')
+                and meta.fields != '__all__'
+                and field_name not in meta.fields
+            ):
+                if type(meta.fields) is tuple:
+                    additional_fields = (field_name,)
+                else:
+                    additional_fields = [field_name]
+                meta.fields += additional_fields
 
         check_excludes(meta.geo_field, 'geo_field')
         add_to_fields(meta.geo_field)

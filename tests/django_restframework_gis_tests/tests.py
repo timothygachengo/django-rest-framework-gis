@@ -261,14 +261,14 @@ class TestRestFrameworkGis(TestCase):
             data=json.dumps(data),
             content_type='application/json',
         )
-        self.assertEqual(response.data['geometry'][0][0:65], self.type_error_message)
+        self.assertEqual(response.data['geometry'][0][:65], self.type_error_message)
         data = {"name": "very wrong", "geometry": False}
         response = self.client.post(
             self.location_list_url,
             data=json.dumps(data),
             content_type='application/json',
         )
-        self.assertEqual(response.data['geometry'][0][0:65], self.type_error_message)
+        self.assertEqual(response.data['geometry'][0][:65], self.type_error_message)
         data = {"name": "very wrong", "geometry": {"value": {"nested": ["yo"]}}}
         response = self.client.post(
             self.location_list_url,
@@ -287,7 +287,7 @@ class TestRestFrameworkGis(TestCase):
             'id': location.id,
             'type': 'Feature',
             'properties': {
-                'details': "http://testserver/geojson/%s/" % location.id,
+                'details': f"http://testserver/geojson/{location.id}/",
                 'name': 'geojson test',
                 'fancy_name': 'Kool geojson test',
                 'timestamp': None,
@@ -670,7 +670,7 @@ class TestRestFrameworkGis(TestCase):
         )
         for geom_type in geom_types:
             with self.subTest(geom_type=geom_type):
-                value = f.to_representation(GEOSGeometry('{} EMPTY'.format(geom_type)))
+                value = f.to_representation(GEOSGeometry(f'{geom_type} EMPTY'))
                 self.assertIsNotNone(value)
                 if geom_type == 'LINEARRING':
                     geom_type = 'LINESTRING'
@@ -741,7 +741,7 @@ class TestRestFrameworkGis(TestCase):
             'id': location.id,
             'type': 'Feature',
             'properties': {
-                'details': "http://testserver/geojson/%s/" % location.id,
+                'details': f"http://testserver/geojson/{location.id}/",
                 'name': 'geometry collection geojson test',
                 'fancy_name': 'Kool geometry collection geojson test',
                 'timestamp': None,
@@ -753,7 +753,11 @@ class TestRestFrameworkGis(TestCase):
                     {'type': 'Point', 'coordinates': [135.0, 45.0]},
                     {
                         'type': 'LineString',
-                        'coordinates': [[135.0, 45.0], [140.0, 50.0], [145.0, 55.0]],
+                        'coordinates': [
+                            [135.0, 45.0],
+                            [140.0, 50.0],
+                            [145.0, 55.0],
+                        ],
                     },
                     {
                         'type': 'Polygon',

@@ -63,24 +63,21 @@ class InBBoxFilter(BaseFilterBackend):
                 'Invalid bbox string supplied for parameter {0}'.format(self.bbox_param)
             )
 
-        x = Polygon.from_bbox((p1x, p1y, p2x, p2y))
-        return x
+        return Polygon.from_bbox((p1x, p1y, p2x, p2y))
 
     def filter_queryset(self, request, queryset, view):
         filter_field = getattr(view, 'bbox_filter_field', None)
         include_overlapping = getattr(view, 'bbox_filter_include_overlapping', False)
-        if include_overlapping:
-            geoDjango_filter = 'bboverlaps'
-        else:
-            geoDjango_filter = 'contained'
-
+        geoDjango_filter = 'bboverlaps' if include_overlapping else 'contained'
         if not filter_field:
             return queryset
 
         bbox = self.get_filter_bbox(request)
-        if not bbox:
-            return queryset
-        return queryset.filter(Q(**{'%s__%s' % (filter_field, geoDjango_filter): bbox}))
+        return (
+            queryset.filter(Q(**{f'{filter_field}__{geoDjango_filter}': bbox}))
+            if bbox
+            else queryset
+        )
 
     def get_schema_operation_parameters(self, view):
         return [
@@ -144,8 +141,7 @@ class TMSTileFilter(InBBoxFilter):
                 'Invalid tile string supplied for parameter {0}'.format(self.tile_param)
             )
 
-        bbox = Polygon.from_bbox(tile_edges(x, y, z))
-        return bbox
+        return Polygon.from_bbox(tile_edges(x, y, z))
 
     def get_schema_operation_parameters(self, view):
         return [
@@ -177,8 +173,7 @@ class DistanceToPointFilter(BaseFilterBackend):
                 )
             )
 
-        p = Point(x, y, **kwargs)
-        return p
+        return Point(x, y, **kwargs)
 
     def dist_to_deg(self, distance, latitude):
         """
@@ -236,7 +231,7 @@ class DistanceToPointFilter(BaseFilterBackend):
             dist = self.dist_to_deg(dist, point[1])
 
         return queryset.filter(
-            Q(**{'%s__%s' % (filter_field, geoDjango_filter): (point, dist)})
+            Q(**{f'{filter_field}__{geoDjango_filter}': (point, dist)})
         )
 
     def get_schema_operation_parameters(self, view):

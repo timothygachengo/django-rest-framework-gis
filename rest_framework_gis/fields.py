@@ -72,9 +72,7 @@ class GeometryField(Field):
                 )
             )
         except (ValueError, TypeError, GDALException) as e:
-            raise ValidationError(
-                _('Unable to convert to python object: {}'.format(str(e)))
-            )
+            raise ValidationError(_(f'Unable to convert to python object: {str(e)}'))
 
     def validate_empty_values(self, data):
         if data == '':
@@ -118,11 +116,7 @@ class GeometryField(Field):
 class GeometrySerializerMethodField(SerializerMethodField):
     def to_representation(self, value):
         value = super().to_representation(value)
-        if value is not None:
-            # we expect value to be a GEOSGeometry instance
-            return GeoJsonDict(value.geojson)
-        else:
-            return None
+        return GeoJsonDict(value.geojson) if value is not None else None
 
 
 class GeoJsonDict(OrderedDict):
