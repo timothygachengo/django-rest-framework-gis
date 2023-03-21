@@ -68,9 +68,9 @@ USE_TZ = True
 USE_I18N = False
 USE_L10N = False
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-MEDIA_ROOT = '%s/media/' % SITE_ROOT
+MEDIA_ROOT = f'{SITE_ROOT}/media/'
 MEDIA_URL = '/media/'
-STATIC_ROOT = '%s/static/' % SITE_ROOT
+STATIC_ROOT = f'{SITE_ROOT}/static/'
 STATIC_URL = '/static/'
 
 TEMPLATE_STRING_IF_INVALID = 'INVALID_TEMPLATE: %s END_INVALID_TEMPLATE'

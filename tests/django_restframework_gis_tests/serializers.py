@@ -67,7 +67,7 @@ class LocationGeoFeatureSerializer(gis_serializers.GeoFeatureModelSerializer):
     fancy_name = serializers.SerializerMethodField()
 
     def get_fancy_name(self, obj):
-        return 'Kool %s' % obj.name
+        return f'Kool {obj.name}'
 
     class Meta:
         model = Location
@@ -128,7 +128,7 @@ class LocatedFileGeoFeatureSerializer(gis_serializers.GeoFeatureModelSerializer)
     file = serializers.FileField(allow_empty_file=True)
 
     def get_fancy_name(self, obj):
-        return 'Nice %s' % obj.name
+        return f'Nice {obj.name}'
 
     class Meta:
         model = Location
@@ -162,10 +162,7 @@ class LocationGeoFeatureMethodSerializer(gis_serializers.GeoFeatureModelSerializ
     new_geometry = gis_serializers.GeometrySerializerMethodField()
 
     def get_new_geometry(self, obj):
-        if obj.name.startswith('hidden'):
-            return Point(0.0, 0.0)
-        else:
-            return obj.geometry
+        return Point(0.0, 0.0) if obj.name.startswith('hidden') else obj.geometry
 
     class Meta:
         model = Location

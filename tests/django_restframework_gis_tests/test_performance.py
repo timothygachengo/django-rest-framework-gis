@@ -23,16 +23,15 @@ if (
 
         def _create_data(self):
             """creates a bunch of gis models instances"""
-            locations = []
             name = 'l{0}'
             slug = 'l{0}'
             wkt = 'POINT (13.{0}125000020002 42.{0}565179379999)'
-            for n in range(1, self.NUMBER_OF_LOCATIONS):
-                locations.append(
-                    Location(
-                        name=name.format(n), slug=slug.format(n), geometry=wkt.format(n)
-                    )
+            locations = [
+                Location(
+                    name=name.format(n), slug=slug.format(n), geometry=wkt.format(n)
                 )
+                for n in range(1, self.NUMBER_OF_LOCATIONS)
+            ]
             Location.objects.bulk_create(locations)
 
         def test_geojson_performance(self):
