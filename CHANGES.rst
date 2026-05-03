@@ -1,6 +1,18 @@
 Changelog
 =========
 
+Version 1.2.1 [unreleased]
+--------------------------
+
+Changes
+~~~~~~~
+
+**Dependencies:**
+
+- Bumped ``djangorestframework`` to ``>=3.12,<3.18`` The code was already
+  compatible with the new release of DRF 3.17, no code changes were
+  needed.
+
 Version 1.2.0 [2025-06-02]
 --------------------------
 
